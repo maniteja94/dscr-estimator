@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSCR Estimator — Free Debt Service Coverage Ratio Calculator</title>
+<meta name="description" content="Free DSCR Estimator: calculate Debt Service Coverage Ratio for rental properties and DSCR loans instantly. Enter rent, expenses and loan terms to see your DSCR, NOI and monthly payment.">
+<style>
+  :root{--navy:#0f2043;--gold:#c9a227;--bg:#f6f7fb;--card:#fff;--text:#1a2332;--muted:#5b6779;--green:#15803d;--amber:#b45309;--red:#b91c1c}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  header{background:var(--navy);color:#fff;padding:28px 16px;text-align:center}
+  header h1{font-size:2rem;letter-spacing:.2px}
+  header h1 span{color:var(--gold)}
+  header p{color:#cbd5e1;max-width:640px;margin:8px auto 0}
+  main{max-width:980px;margin:0 auto;padding:24px 16px 48px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 2px 10px rgba(15,32,67,.08)}
+  .card h2{font-size:1.1rem;color:var(--navy);margin-bottom:14px;border-bottom:2px solid var(--gold);padding-bottom:8px}
+  label{display:block;font-size:.85rem;font-weight:600;color:var(--muted);margin:12px 0 4px}
+  input{width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:1rem}
+  input:focus{outline:2px solid var(--gold);border-color:transparent}
+  .result{text-align:center}
+  .dscr-value{font-size:3.2rem;font-weight:800;color:var(--navy);line-height:1.1}
+  .verdict{font-weight:700;padding:6px 14px;border-radius:999px;display:inline-block;margin:10px 0;font-size:.95rem}
+  .v-good{background:#dcfce7;color:var(--green)} .v-ok{background:#fef3c7;color:var(--amber)} .v-bad{background:#fee2e2;color:var(--red)}
+  .rows{margin-top:14px;text-align:left}
+  .rows div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eef1f5}
+  .rows div:last-child{border-bottom:none}
+  .rows span{color:var(--muted)} .rows strong{color:var(--navy)}
+  section.text{margin-top:28px}
+  section.text h2{color:var(--navy);margin-bottom:10px}
+  section.text p{margin-bottom:10px;color:#334155}
+  code,.formula{background:#eef2ff;border-radius:8px;padding:12px 16px;display:block;text-align:center;font-weight:700;color:var(--navy);margin:12px 0;font-size:1.05rem}
+  .cta{background:var(--navy);color:#fff;border-radius:14px;padding:24px;text-align:center;margin-top:28px}
+  .cta h2{color:#fff;margin-bottom:8px}
+  .cta p{color:#cbd5e1;margin-bottom:16px}
+  .cta a{background:var(--gold);color:var(--navy);font-weight:800;text-decoration:none;padding:12px 22px;border-radius:10px;display:inline-block}
+  .cta a:hover{opacity:.92}
+  footer{text-align:center;color:var(--muted);font-size:.9rem;padding:24px 16px}
+  footer a{color:var(--navy);font-weight:600}
+  button{width:100%;margin-top:18px;background:var(--navy);color:#fff;border:none;padding:13px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}
+  button:hover{opacity:.93}
+</style>
+</head>
+<body>
+<header>
+  <h1>DSCR <span>Estimator</span></h1>
+  <p>Estimate the Debt Service Coverage Ratio of a rental property in seconds — the same number DSCR lenders use to approve or reject your loan.</p>
+</header>
+<main>
+  <div class="grid">
+    <div class="card">
+      <h2>Property Income &amp; Expenses (Monthly)</h2>
+      <label>Monthly Rent ($)</label><input id="rent" type="number" value="2850" min="0">
+      <label>Other Monthly Income ($)</label><input id="otherIncome" type="number" value="0" min="0">
+      <label>Property Taxes ($ / month)</label><input id="taxes" type="number" value="250" min="0">
+      <label>Insurance ($ / month)</label><input id="insurance" type="number" value="120" min="0">
+      <label>HOA ($ / month)</label><input id="hoa" type="number" value="0" min="0">
+      <label>Maintenance ($ / month)</label><input id="maintenance" type="number" value="100" min="0">
+      <label>Vacancy + Management (%)</label><input id="vacMgmt" type="number" value="10" min="0" max="100">
+
+      <h2 style="margin-top:22px">Loan Details</h2>
+      <label>Loan Amount ($)</label><input id="loan" type="number" value="240000" min="0">
+      <label>Interest Rate (% / year)</label><input id="rate" type="number" value="7.5" step="0.01" min="0">
+      <label>Loan Term (years)</label><input id="term" type="number" value="30" min="1">
+      <button onclick="calculate()">Calculate DSCR</button>
+    </div>
+
+    <div class="card result">
+      <h2 style="text-align:left">Your Result</h2>
+      <div class="dscr-value" id="dscrOut">—</div>
+      <div class="verdict v-ok" id="verdictOut">Enter values and calculate</div>
+      <div class="rows">
+        <div><span>Net Operating Income (annual)</span><strong id="noiOut">—</strong></div>
+        <div><span>Monthly Loan Payment (P&amp;I)</span><strong id="payOut">—</strong></div>
+        <div><span>Annual Debt Service</span><strong id="adsOut">—</strong></div>
+        <div><span>Monthly Cash Flow (after debt)</span><strong id="cfOut">—</strong></div>
+      </div>
+      <p style="margin-top:16px;color:#5b6779;font-size:.92rem">Most DSCR lenders want <strong>1.25 or higher</strong>. 1.00–1.24 may still qualify with a higher rate or larger down payment. Below 1.00, the rent does not cover the loan payment.</p>
+    </div>
+  </div>
+
+  <section class="text card" style="margin-top:24px">
+    <h2>What is DSCR?</h2>
+    <p>DSCR (Debt Service Coverage Ratio) measures whether a property's income can cover its loan payments. DSCR loans let real estate investors qualify based on the property's rent instead of personal income or tax returns.</p>
+    <span class="formula">DSCR = Net Operating Income ÷ Annual Debt Service</span>
+    <p><strong>Example:</strong> A property with $18,000/year NOI and $14,400/year in loan payments has a DSCR of 1.25 — exactly what most lenders look for.</p>
+    <p>For a full-featured calculator with DSCR loan estimates, break-even rent, and maximum loan amount calculations, try the <a href="https://dscrcalculatorpro.com">DSCR calculator</a> at dscrcalculatorpro.com.</p>
+  </section>
+
+  <div class="cta">
+    <h2>Need the Advanced DSCR Calculator?</h2>
+    <p>Get loan sizing, break-even analysis and lender-ready numbers with the full free tool.</p>
+    <a href="https://dscrcalculatorpro.com">Use the Free DSCR Calculator →</a>
+  </div>
+</main>
+<footer>
+  <p>DSCR Estimator — a free open-source tool. Advanced calculator: <a href="https://dscrcalculatorpro.com">dscrcalculatorpro.com</a></p>
+</footer>
+<script>
+function money(n){return '$'+Math.round(n).toLocaleString('en-US')}
+function calculate(){
+  var rent=+document.getElementById('rent').value||0;
+  var other=+document.getElementById('otherIncome').value||0;
+  var gross=rent+other;
+  var fixed=(+document.getElementById('taxes').value||0)+(+document.getElementById('insurance').value||0)+(+document.getElementById('hoa').value||0)+(+document.getElementById('maintenance').value||0);
+  var pct=(+document.getElementById('vacMgmt').value||0)/100;
+  var monthlyNOI=gross-fixed-(gross*pct);
+  var noi=monthlyNOI*12;
+  var loan=+document.getElementById('loan').value||0;
+  var r=((+document.getElementById('rate').value||0)/100)/12;
+  var n=((+document.getElementById('term').value||0)*12);
+  var pay=r>0 ? loan*r/(1-Math.pow(1+r,-n)) : (n>0?loan/n:0);
+  var ads=pay*12;
+  var dscr=ads>0?noi/ads:0;
+  document.getElementById('dscrOut').textContent=dscr?dscr.toFixed(2):'—';
+  document.getElementById('noiOut').textContent=money(noi);
+  document.getElementById('payOut').textContent=money(pay);
+  document.getElementById('adsOut').textContent=money(ads);
+  document.getElementById('cfOut').textContent=money(monthlyNOI-pay);
+  var v=document.getElementById('verdictOut');
+  if(dscr>=1.25){v.textContent='✓ Strong — lender preferred';v.className='verdict v-good'}
+  else if(dscr>=1.0){v.textContent='Borderline — may qualify with conditions';v.className='verdict v-ok'}
+  else{v.textContent='✗ Weak — rent does not cover the loan';v.className='verdict v-bad'}
+}
+calculate();
+document.querySelectorAll('input').forEach(function(i){i.addEventListener('input',calculate)});
+</script>
+</body>
+</html>
