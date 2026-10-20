@@ -2,7 +2,7 @@
 
 A free, simple **DSCR Estimator** — calculate the Debt Service Coverage Ratio for a rental property or DSCR loan in seconds.
 
-**Live site:** GitHub Pages (link added after deployment)
+**Live site:** https://maniteja94.github.io/dscr-estimator/
 
 ## What it does
 
